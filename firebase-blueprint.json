@@ -1,0 +1,92 @@
+{
+  "entities": {
+    "Post": {
+      "title": "게시글",
+      "description": "출판사 소식, 공지사항 또는 블로그 포스트",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "게시글 제목" },
+        "content": { "type": "string", "description": "게시글 내용 (HTML/Markdown)" },
+        "image": { "type": "string", "description": "대표 이미지 URL" },
+        "category": { "type": "string", "description": "카테고리 (예: 공지사항, 소식)" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "작성일" },
+        "authorId": { "type": "string", "description": "작성자 UID" }
+      },
+      "required": ["title", "content", "createdAt", "authorId"]
+    },
+    "Book": {
+      "title": "도서",
+      "description": "출판사에서 출간한 도서 정보",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "도서 제목" },
+        "author": { "type": "string", "description": "저자" },
+        "description": { "type": "string", "description": "도서 설명" },
+        "coverImage": { "type": "string", "description": "표지 이미지 URL" },
+        "price": { "type": "number", "description": "가격" },
+        "purchaseLink": { "type": "string", "description": "구매 링크" },
+        "publishedAt": { "type": "string", "format": "date-time", "description": "출간일" }
+      },
+      "required": ["title", "author", "coverImage"]
+    },
+    "SiteConfig": {
+      "title": "사이트 설정",
+      "description": "웹사이트의 디자인 및 SEO 설정",
+      "type": "object",
+      "properties": {
+        "themeColor": { "type": "string", "description": "테마 배경색" },
+        "pointColor": { "type": "string", "description": "포인트 컬러 (네이비/골드 등)" },
+        "pointColorSecondary": { "type": "string", "description": "보조 포인트 컬러 (골드 등)" },
+        "fontFamily": { "type": "string", "description": "폰트 설정" },
+        "logoUrl": { "type": "string", "description": "로고 이미지 URL 또는 Base64" },
+        "seoTitle": { "type": "string", "description": "SEO 제목" },
+        "seoDescription": { "type": "string", "description": "SEO 설명" },
+        "heroTitle": { "type": "string", "description": "홈페이지 메인 제목" },
+        "heroSubtitle": { "type": "string", "description": "홈페이지 메인 부제목" },
+        "heroImageUrl": { "type": "string", "description": "홈페이지 메인 이미지 URL" },
+        "footerLogoUrl": { "type": "string", "description": "푸터 로고 이미지 URL" },
+        "booksLink": { "type": "string", "description": "푸터 도서 목록 링크" },
+        "authorSupportLink": { "type": "string", "description": "푸터 저자 지원 링크" },
+        "address": { "type": "string", "description": "회사 주소" },
+        "email": { "type": "string", "description": "문의 이메일" },
+        "phone": { "type": "string", "description": "문의 전화번호" },
+        "menus": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": { "type": "string" },
+              "view": { "type": "string" },
+              "category": { "type": "string" }
+            }
+          }
+        },
+        "socialLinks": {
+          "type": "object",
+          "properties": {
+            "instagram": { "type": "string" },
+            "facebook": { "type": "string" },
+            "twitter": { "type": "string" }
+          }
+        }
+      }
+    },
+    "User": {
+      "title": "사용자",
+      "description": "관리자 및 사용자 정보",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "description": "이메일" },
+        "role": { "type": "string", "enum": ["admin", "user"], "description": "역할" },
+        "displayName": { "type": "string", "description": "표시 이름" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/posts/{postId}": { "schema": "Post", "description": "게시글 컬렉션" },
+    "/books/{bookId}": { "schema": "Book", "description": "도서 컬렉션" },
+    "/config/site": { "schema": "SiteConfig", "description": "사이트 전역 설정" },
+    "/users/{userId}": { "schema": "User", "description": "사용자 컬렉션" }
+  }
+}

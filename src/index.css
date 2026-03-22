@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", "Noto Serif KR", serif;
+  --color-navy: #001F3F;
+  --color-gold: #D4AF37;
+  --color-gold-light: #F4E1A1;
+}
+
+body {
+  @apply bg-white text-gray-900 font-sans;
+}
+
+.serif {
+  @apply font-serif;
+}
