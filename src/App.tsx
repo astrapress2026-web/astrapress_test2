@@ -310,12 +310,13 @@ const Hero = ({ onNavigate }: { onNavigate: (view: string) => void }) => {
   );
 };
 
-const BookCard = ({ book }: { book: Book, key?: string | number }) => (
+const BookCard = ({ book, onSelect }: { book: Book, onSelect?: (book: Book) => void, key?: string | number }) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     className="group cursor-pointer"
+    onClick={() => onSelect?.(book)}
   >
     <div className="aspect-[3/4] bg-gray-100 rounded-2xl overflow-hidden mb-4 shadow-md group-hover:shadow-xl transition-all duration-300">
       <img 
@@ -330,12 +331,78 @@ const BookCard = ({ book }: { book: Book, key?: string | number }) => (
   </motion.div>
 );
 
-const PostCard = ({ post }: { post: Post, key?: string | number }) => (
+const BookDetail = ({ book, onClose }: { book: Book, onClose: () => void }) => (
+  <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+      className="absolute inset-0 bg-navy/60 backdrop-blur-md"
+    />
+    <motion.div 
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 50, scale: 0.95 }}
+      className="relative w-full max-w-5xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+    >
+      <button 
+        onClick={onClose}
+        className="absolute top-6 right-6 z-10 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-navy hover:bg-white transition-all shadow-lg"
+      >
+        <X size={24} />
+      </button>
+
+      <div className="md:w-2/5 bg-gray-100 overflow-hidden">
+        <img 
+          src={book.coverImage} 
+          alt={book.title} 
+          className="w-full h-full object-cover"
+          referrerPolicy="no-referrer"
+        />
+      </div>
+      
+      <div className="md:w-3/5 p-8 md:p-16 overflow-y-auto">
+        <div className="mb-10">
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-navy mb-4 leading-tight">{book.title}</h2>
+          <p className="text-xl text-gold font-medium">{book.author} 저</p>
+        </div>
+
+        <div className="mb-12">
+          <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Book Description</h3>
+          <div className="prose prose-lg max-w-none text-gray-600 leading-relaxed whitespace-pre-line">
+            {book.description}
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-8 pt-8 border-t border-gray-100">
+          <div>
+            <p className="text-sm text-gray-400 uppercase tracking-widest mb-1">Price</p>
+            <p className="text-3xl font-bold text-navy">{book.price?.toLocaleString()}원</p>
+          </div>
+          {book.purchaseLink && (
+            <a 
+              href={book.purchaseLink} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-10 py-5 bg-navy text-white font-bold rounded-full flex items-center justify-center gap-3 hover:bg-gold transition-all shadow-xl hover:shadow-gold/20"
+            >
+              구매하기 <ExternalLink size={20} />
+            </a>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  </div>
+);
+
+const PostCard = ({ post, onSelect }: { post: Post, onSelect?: (post: Post) => void, key?: string | number }) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
-    className="bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg transition-all group"
+    className="bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg transition-all group cursor-pointer"
+    onClick={() => onSelect?.(post)}
   >
     <div className="aspect-video bg-gray-100 overflow-hidden">
       <img 
@@ -357,6 +424,52 @@ const PostCard = ({ post }: { post: Post, key?: string | number }) => (
       </button>
     </div>
   </motion.div>
+);
+
+const PostDetail = ({ post, onClose }: { post: Post, onClose: () => void }) => (
+  <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+      className="absolute inset-0 bg-navy/60 backdrop-blur-md"
+    />
+    <motion.div 
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 50, scale: 0.95 }}
+      className="relative w-full max-w-4xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+    >
+      <button 
+        onClick={onClose}
+        className="absolute top-6 right-6 z-10 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-navy hover:bg-white transition-all shadow-lg"
+      >
+        <X size={24} />
+      </button>
+
+      <div className="overflow-y-auto">
+        <div className="aspect-video w-full bg-gray-100">
+          <img 
+            src={post.image} 
+            alt={post.title} 
+            className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+        <div className="p-8 md:p-12">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="px-4 py-1.5 bg-gold/10 text-gold text-sm font-bold rounded-full uppercase tracking-wider">{post.category}</span>
+            <span className="text-sm text-gray-400 font-medium">{post.createdAt?.seconds ? new Date(post.createdAt.seconds * 1000).toLocaleDateString() : '방금 전'}</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-navy mb-8 leading-tight">{post.title}</h2>
+          <div className="prose prose-lg max-w-none text-gray-600 leading-relaxed whitespace-pre-line">
+            {post.content}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  </div>
 );
 
 const AdminDashboard = () => {
@@ -894,6 +1007,8 @@ export default function App() {
   const [currentView, setCurrentView] = useState('home');
   const [posts, setPosts] = useState<Post[]>([]);
   const [books, setBooks] = useState<Book[]>([]);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, async (u) => {
@@ -952,26 +1067,6 @@ export default function App() {
     return () => { unsubAuth(); unsubConfig(); unsubPosts(); unsubBooks(); };
   }, []);
 
-  // Sample Data Injection (only if empty and admin logged in)
-  useEffect(() => {
-    if (isAdmin && posts.length === 0 && books.length === 0) {
-      const injectSample = async () => {
-        const samplePosts = [
-          { title: '아스트라프레스 웹사이트 오픈!', content: '새로운 디지털 공간에서 독자 여러분을 만납니다. 다양한 도서 소식과 이벤트를 기대해주세요.', category: '공지사항', image: 'https://picsum.photos/seed/post1/800/600', createdAt: serverTimestamp(), authorId: user?.uid },
-          { title: '2026년 봄, 신간 라인업 공개', content: '올 봄, 여러분의 마음을 따뜻하게 적실 아스트라프레스의 신간들을 소개합니다.', category: '소식', image: 'https://picsum.photos/seed/post2/800/600', createdAt: serverTimestamp(), authorId: user?.uid }
-        ];
-        const sampleBooks = [
-          { title: '지혜의 별', author: '김지혜', description: '밤하늘의 별을 보며 깨닫는 인생의 진리', coverImage: 'https://picsum.photos/seed/book1/600/800', price: 18000, purchaseLink: '#', publishedAt: serverTimestamp() },
-          { title: '현대인의 사색', author: '이철수', description: '바쁜 일상 속에서 나를 찾는 시간', coverImage: 'https://picsum.photos/seed/book2/600/800', price: 15000, purchaseLink: '#', publishedAt: serverTimestamp() }
-        ];
-        
-        for (const p of samplePosts) await addDoc(collection(db, 'posts'), p);
-        for (const b of sampleBooks) await addDoc(collection(db, 'books'), b);
-      };
-      injectSample();
-    }
-  }, [isAdmin, posts.length, books.length]);
-
   if (loading || !isConfigLoaded) {
     return (
       <div className="h-screen flex items-center justify-center bg-white">
@@ -1013,7 +1108,7 @@ export default function App() {
                     </button>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                    {books.slice(0, 4).map(book => <BookCard key={book.id} book={book} />)}
+                    {books.slice(0, 4).map(book => <BookCard key={book.id} book={book} onSelect={setSelectedBook} />)}
                   </div>
                 </div>
               </section>
@@ -1037,7 +1132,7 @@ export default function App() {
                     </button>
                   </div>
                   <div className="grid md:grid-cols-3 gap-8">
-                    {posts.filter(p => p.category === 'posts' || !p.category).slice(0, 3).map(post => <PostCard key={post.id} post={post} />)}
+                    {posts.filter(p => p.category === 'posts' || !p.category).slice(0, 3).map(post => <PostCard key={post.id} post={post} onSelect={setSelectedPost} />)}
                   </div>
                 </div>
               </section>
@@ -1049,7 +1144,7 @@ export default function App() {
               <div className="max-w-7xl mx-auto">
                 <h2 className="text-4xl font-serif font-bold text-navy mb-12">전체 도서 목록</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
-                  {books.map(book => <BookCard key={book.id} book={book} />)}
+                  {books.map(book => <BookCard key={book.id} book={book} onSelect={setSelectedBook} />)}
                 </div>
               </div>
             </section>
@@ -1063,7 +1158,7 @@ export default function App() {
                   {config.menus?.find(m => m.view === currentView)?.label || '게시판'}
                 </h2>
                 <div className="grid md:grid-cols-3 gap-8">
-                  {posts.filter(p => p.category === currentView || (currentView === 'posts' && !p.category)).map(post => <PostCard key={post.id} post={post} />)}
+                  {posts.filter(p => p.category === currentView || (currentView === 'posts' && !p.category)).map(post => <PostCard key={post.id} post={post} onSelect={setSelectedPost} />)}
                 </div>
                 {posts.filter(p => p.category === currentView || (currentView === 'posts' && !p.category)).length === 0 && (
                   <div className="py-20 text-center text-gray-400">
@@ -1076,6 +1171,11 @@ export default function App() {
 
           {currentView === 'admin' && isAdmin && <AdminDashboard />}
         </main>
+
+        <AnimatePresence>
+          {selectedPost && <PostDetail post={selectedPost} onClose={() => setSelectedPost(null)} />}
+          {selectedBook && <BookDetail book={selectedBook} onClose={() => setSelectedBook(null)} />}
+        </AnimatePresence>
 
         <Footer onNavigate={setCurrentView} />
       </div>
