@@ -112,7 +112,7 @@ const defaultConfig: SiteConfig = {
   pointColorSecondary: '#D4AF37',
   fontFamily: 'sans',
   logoUrl: '',
-  seoTitle: '아스트라프레스 (Astrapress)',
+  seoTitle: '아스트라프레스',
   seoDescription: '',
   heroTitle: '',
   heroSubtitle: '',
@@ -1066,6 +1066,12 @@ export default function App() {
 
     return () => { unsubAuth(); unsubConfig(); unsubPosts(); unsubBooks(); };
   }, []);
+
+  useEffect(() => {
+    if (config.seoTitle) {
+      document.title = config.seoTitle;
+    }
+  }, [config.seoTitle]);
 
   if (loading || !isConfigLoaded) {
     return (
