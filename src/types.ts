@@ -43,8 +43,8 @@ export interface SiteConfig {
   }[];
   socialLinks: {
     instagram: string;
-    facebook: string;
-    twitter: string;
+    blog: string;
+    threads: string;
   };
 }
 

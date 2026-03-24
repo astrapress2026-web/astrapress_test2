@@ -37,8 +37,8 @@ import {
   LogIn, 
   ChevronRight, 
   Instagram, 
-  Facebook, 
-  Twitter,
+  Bold, 
+  AtSign,
   Menu,
   X,
   Save,
@@ -96,6 +96,25 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
   throw new Error(JSON.stringify(errInfo));
 }
 
+// --- Icons ---
+const NaverBlogIcon = ({ size = 20, className = "" }: { size?: number, className?: string }) => (
+  <svg 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="3" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="M7 4v16" />
+    <path d="M7 4h6a4 4 0 0 1 0 8H7" />
+    <path d="M7 12h8a4 4 0 0 1 0 8H7" />
+  </svg>
+);
+
 // --- Context ---
 interface AppContextType {
   user: FirebaseUser | null;
@@ -113,7 +132,7 @@ const defaultConfig: SiteConfig = {
   fontFamily: 'sans',
   logoUrl: '',
   seoTitle: '아스트라프레스',
-  seoDescription: '',
+  seoDescription: '아스트라프레스는 사람과 사람 사이의 이야기를 엮어 균형 있는 인문학 책을 만드는 1인 출판사입니다.',
   heroTitle: '',
   heroSubtitle: '',
   heroImageUrl: '',
@@ -131,8 +150,8 @@ const defaultConfig: SiteConfig = {
   ],
   socialLinks: {
     instagram: 'https://instagram.com',
-    facebook: 'https://facebook.com',
-    twitter: 'https://twitter.com'
+    blog: 'https://blog.naver.com',
+    threads: 'https://threads.net'
   }
 };
 
@@ -732,12 +751,12 @@ const AdminDashboard = () => {
                     <input type="text" value={siteConfig.socialLinks.instagram} onChange={e => setSiteConfig({...siteConfig, socialLinks: {...siteConfig.socialLinks, instagram: e.target.value}})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold outline-none" />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2"><Facebook size={16} /> Facebook</label>
-                    <input type="text" value={siteConfig.socialLinks.facebook} onChange={e => setSiteConfig({...siteConfig, socialLinks: {...siteConfig.socialLinks, facebook: e.target.value}})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold outline-none" />
+                    <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2"><NaverBlogIcon size={16} /> Blog</label>
+                    <input type="text" value={siteConfig.socialLinks.blog} onChange={e => setSiteConfig({...siteConfig, socialLinks: {...siteConfig.socialLinks, blog: e.target.value}})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold outline-none" />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2"><Twitter size={16} /> Twitter</label>
-                    <input type="text" value={siteConfig.socialLinks.twitter} onChange={e => setSiteConfig({...siteConfig, socialLinks: {...siteConfig.socialLinks, twitter: e.target.value}})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold outline-none" />
+                    <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2"><AtSign size={16} /> Threads</label>
+                    <input type="text" value={siteConfig.socialLinks.threads} onChange={e => setSiteConfig({...siteConfig, socialLinks: {...siteConfig.socialLinks, threads: e.target.value}})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold outline-none" />
                   </div>
                 </div>
               </div>
@@ -964,8 +983,8 @@ const Footer = ({ onNavigate }: { onNavigate: (view: string) => void }) => {
           </p>
           <div className="flex gap-4">
             <a href={config.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-navy transition-all"><Instagram size={20} /></a>
-            <a href={config.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-navy transition-all"><Facebook size={20} /></a>
-            <a href={config.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-navy transition-all"><Twitter size={20} /></a>
+            <a href={config.socialLinks.blog} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-navy transition-all"><NaverBlogIcon size={20} /></a>
+            <a href={config.socialLinks.threads} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-navy transition-all"><AtSign size={20} /></a>
           </div>
         </div>
         <div>
@@ -1070,8 +1089,28 @@ export default function App() {
   useEffect(() => {
     if (config.seoTitle) {
       document.title = config.seoTitle;
+      
+      // Update OG Title
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.setAttribute('content', config.seoTitle);
     }
-  }, [config.seoTitle]);
+    
+    if (config.seoDescription) {
+      // Update Description
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', config.seoDescription);
+      
+      // Update OG Description
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) ogDesc.setAttribute('content', config.seoDescription);
+    }
+
+    if (config.logoUrl) {
+      // Update OG Image
+      const ogImage = document.querySelector('meta[property="og:image"]');
+      if (ogImage) ogImage.setAttribute('content', config.logoUrl);
+    }
+  }, [config.seoTitle, config.seoDescription, config.logoUrl]);
 
   if (loading || !isConfigLoaded) {
     return (
