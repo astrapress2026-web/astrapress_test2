@@ -1030,45 +1030,60 @@ export default function App() {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+      setIsConfigLoaded(true);
+    }, 5000); // 5 second timeout
+
     const unsubAuth = onAuthStateChanged(auth, async (u) => {
-      setUser(u);
-      if (u) {
-        // Check admin status
-        const adminEmail = "astrapress2026@gmail.com";
-        if (u.email === adminEmail) {
-          setIsAdmin(true);
-          // Ensure user doc exists
-          await setDoc(doc(db, 'users', u.uid), {
-            email: u.email,
-            role: 'admin',
-            displayName: u.displayName
-          }, { merge: true });
+      try {
+        setUser(u);
+        if (u) {
+          // Check admin status
+          const adminEmail = "astrapress2026@gmail.com";
+          if (u.email === adminEmail) {
+            setIsAdmin(true);
+            // Ensure user doc exists
+            await setDoc(doc(db, 'users', u.uid), {
+              email: u.email,
+              role: 'admin',
+              displayName: u.displayName
+            }, { merge: true });
+          } else {
+            setIsAdmin(false);
+          }
         } else {
           setIsAdmin(false);
         }
-      } else {
-        setIsAdmin(false);
+      } catch (error) {
+        console.error('Auth state error:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     const unsubConfig = onSnapshot(doc(db, 'config', 'site'), (snap) => {
       if (snap.exists()) {
         setConfig(snap.data() as SiteConfig);
-        setIsConfigLoaded(true);
-      } else {
-        setIsConfigLoaded(true);
       }
+      setIsConfigLoaded(true);
+    }, (error) => {
+      console.error('Config load error:', error);
+      setIsConfigLoaded(true); // Fallback to default
     });
 
     const qPosts = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
     const unsubPosts = onSnapshot(qPosts, (snap) => {
       setPosts(snap.docs.map(d => ({ id: d.id, ...d.data() } as Post)));
+    }, (error) => {
+      console.error('Posts load error:', error);
     });
 
     const qBooks = query(collection(db, 'books'), orderBy('publishedAt', 'desc'));
     const unsubBooks = onSnapshot(qBooks, (snap) => {
       setBooks(snap.docs.map(d => ({ id: d.id, ...d.data() } as Book)));
+    }, (error) => {
+      console.error('Books load error:', error);
     });
 
     // Initial connection test
@@ -1083,7 +1098,13 @@ export default function App() {
     };
     testConnection();
 
-    return () => { unsubAuth(); unsubConfig(); unsubPosts(); unsubBooks(); };
+    return () => { 
+      clearTimeout(timer);
+      unsubAuth(); 
+      unsubConfig(); 
+      unsubPosts(); 
+      unsubBooks(); 
+    };
   }, []);
 
   useEffect(() => {
